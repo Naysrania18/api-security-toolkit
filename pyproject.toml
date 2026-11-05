@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "api-security-toolkit"
+version = "0.1.0"
+description = "OpenAPI-driven checks for OWASP API Security Top 10 risks (BOLA, broken auth, injection, data exposure)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["requests>=2.31", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "flask>=3", "ruff", "bandit"]
+
+[project.scripts]
+apisec = "apisec.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
