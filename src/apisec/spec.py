@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -112,7 +111,3 @@ def parse_endpoints(doc: dict) -> list[Endpoint]:
 
 def load_endpoints(path: str | Path) -> list[Endpoint]:
     return parse_endpoints(load_spec(path))
-
-
-def dump_json(obj: Any) -> str:
-    return json.dumps(obj, indent=2, sort_keys=True)
