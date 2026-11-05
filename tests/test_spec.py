@@ -71,3 +71,11 @@ def test_cyclic_ref_does_not_hang():
         },
     }
     assert parse_endpoints(doc)[0].path == "/x"
+
+
+def test_destructive_looking_routes_are_not_probed():
+    from apisec.models import Endpoint
+
+    assert not Endpoint("GET", "/createdb").safe_to_probe
+    assert not Endpoint("GET", "/users/v1/_debug").safe_to_probe
+    assert Endpoint("GET", "/books/v1").safe_to_probe

@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
+
+# GET routes whose names suggest they change state; never probe these automatically.
+DESTRUCTIVE_PATH = re.compile(
+    r"(createdb|resetdb|reset|drop|truncate|wipe|purge|delete|logout|shutdown|_debug)", re.I
+)
 
 
 @dataclass(frozen=True)
@@ -20,6 +26,10 @@ class Endpoint:
     params: list[Param] = field(default_factory=list)
     secured: bool = False  # spec says auth is required
     operation_id: str = ""
+
+    @property
+    def safe_to_probe(self) -> bool:
+        return not DESTRUCTIVE_PATH.search(self.path)
 
     @property
     def key(self) -> str:

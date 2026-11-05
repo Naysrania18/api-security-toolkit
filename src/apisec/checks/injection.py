@@ -31,7 +31,7 @@ class InjectionCheck(Check):
     def run(self, ctx: ScanContext) -> list[Finding]:
         findings: list[Finding] = []
         for ep in ctx.endpoints:
-            if ep.method not in {"GET", "POST"}:
+            if ep.method not in {"GET", "POST"} or not ep.safe_to_probe:
                 continue
             finding = self._test_endpoint(ctx, ep, ctx.user_a)
             if finding:

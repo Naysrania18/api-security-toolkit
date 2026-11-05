@@ -19,7 +19,7 @@ class BrokenAuthCheck(Check):
     def run(self, ctx: ScanContext) -> list[Finding]:
         findings: list[Finding] = []
         for ep in ctx.endpoints:
-            if not ep.secured or ep.method != "GET":
+            if not ep.secured or ep.method != "GET" or not ep.safe_to_probe:
                 continue  # only safe (read-only) methods are probed without credentials
             path = fill_path(ep.path, {})
             for label, identity in self._variants(ctx):

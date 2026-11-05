@@ -39,7 +39,7 @@ class ExposureCheck(Check):
     def run(self, ctx: ScanContext) -> list[Finding]:
         findings: list[Finding] = []
         for ep in ctx.endpoints:
-            if ep.method != "GET":
+            if ep.method != "GET" or not ep.safe_to_probe:
                 continue
             path = fill_path(ep.path, {})
             resp = ctx.client.request("GET", path, ctx.user_a)
