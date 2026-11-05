@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "api-security-toolkit",
+          "version": "0.1.0",
+          "rules": [
+            {
+              "id": "bola",
+              "name": "BrokenObjectLevelAuthorization",
+              "shortDescription": {
+                "text": "Broken Object Level Authorization"
+              },
+              "helpUri": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "API1:2023"
+                ]
+              }
+            },
+            {
+              "id": "injection",
+              "name": "PossibleSQL/NoSQLinjection",
+              "shortDescription": {
+                "text": "Possible SQL/NoSQL injection"
+              },
+              "helpUri": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "API8:2023"
+                ]
+              }
+            },
+            {
+              "id": "data-exposure",
+              "name": "Excessivedataexposure",
+              "shortDescription": {
+                "text": "Excessive data exposure"
+              },
+              "helpUri": "https://owasp.org/API-Security/editions/2023/en/0x11-t10/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "API3:2023"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "bola",
+          "level": "error",
+          "message": {
+            "text": "User 'user_b' could read object 'bookTitle41' that was discovered through user 'user_a'. Remediation: Enforce object-level authorization on every request: compare the authenticated user to the object's owner before returning data."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "C:/Users/HP/AppData/Local/Temp/claude/2a0918b61d81bcf8/8711dd24-a8f9-43eb-a8dd-9f4d3f065e80/scratchpad/vampi-src/openapi_specs/openapi3.yml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "name": "GET /books/v1/{book_title}",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "confidence": "low",
+            "evidence": "GET /books/v1/bookTitle41 -> 200 for both users (body 83 bytes)",
+            "owasp": "API1:2023"
+          }
+        },
+        {
+          "ruleId": "bola",
+          "level": "error",
+          "message": {
+            "text": "User 'user_b' could read object 'name1' that was discovered through user 'user_a'. Remediation: Enforce object-level authorization on every request: compare the authenticated user to the object's owner before returning data."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "C:/Users/HP/AppData/Local/Temp/claude/2a0918b61d81bcf8/8711dd24-a8f9-43eb-a8dd-9f4d3f065e80/scratchpad/vampi-src/openapi_specs/openapi3.yml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "name": "GET /users/v1/{username}",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "confidence": "low",
+            "evidence": "GET /users/v1/name1 -> 200 for both users (body 48 bytes)",
+            "owasp": "API1:2023"
+          }
+        },
+        {
+          "ruleId": "data-exposure",
+          "level": "warning",
+          "message": {
+            "text": "Response contains fields that look sensitive: users[].password Remediation: Return only the fields the client needs (explicit response schemas / DTOs) and never expose secrets or password hashes."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "C:/Users/HP/AppData/Local/Temp/claude/2a0918b61d81bcf8/8711dd24-a8f9-43eb-a8dd-9f4d3f065e80/scratchpad/vampi-src/openapi_specs/openapi3.yml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "name": "GET /users/v1/_debug",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "evidence": "GET /users/v1/_debug -> 200, fields: ['users[].password']",
+            "owasp": "API3:2023"
+          }
+        },
+        {
+          "ruleId": "injection",
+          "level": "warning",
+          "message": {
+            "text": "Parameter 'username' (path) triggered server error 500 (baseline 404) when sent the payload \"'\". Remediation: Use parameterized queries / an ORM, validate input types, and never return raw database errors to clients."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "C:/Users/HP/AppData/Local/Temp/claude/2a0918b61d81bcf8/8711dd24-a8f9-43eb-a8dd-9f4d3f065e80/scratchpad/vampi-src/openapi_specs/openapi3.yml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "name": "GET /users/v1/{username}",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "confidence": "low",
+            "evidence": "payload=\"'\" -> HTTP 500",
+            "owasp": "API8:2023"
+          }
+        }
+      ],
+      "properties": {
+        "target": "http://127.0.0.1:5000"
+      }
+    }
+  ]
+}
