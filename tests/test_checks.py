@@ -51,3 +51,13 @@ def test_collection_path_and_discovery(ctx):
     assert collection_path(ep) == "/api/notes"
     assert sorted(discover_ids(ctx, ep, Identity("alice", "token-alice"))) == ["1", "2"]
     assert discover_ids(ctx, ep, Identity("bob", "token-bob")) == ["3"]
+
+
+def test_tamper_token_changes_jwt_signature_start_not_end():
+    from apisec.checks.auth import tamper_token
+
+    jwt = "aaa.bbb.Sig123"
+    out = tamper_token(jwt)
+    assert out.split(".")[:2] == ["aaa", "bbb"]
+    assert out.split(".")[2] != "Sig123" and out.split(".")[2][1:] == "ig123"
+    assert tamper_token("opaque") != "opaque"

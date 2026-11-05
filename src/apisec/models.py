@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 # GET routes whose names suggest they change state; never probe these automatically.
 DESTRUCTIVE_PATH = re.compile(
-    r"(createdb|resetdb|reset|drop|truncate|wipe|purge|delete|logout|shutdown|_debug)", re.I
+    r"(createdb|resetdb|reset|drop|truncate|wipe|purge|delete|logout|shutdown)", re.I
 )
 
 

@@ -11,6 +11,19 @@ from ..models import Finding
 from .base import Check, ScanContext, fill_path
 
 
+def tamper_token(token: str) -> str:
+    """Corrupt a token so a correct verifier must reject it.
+
+    For a JWT we change the FIRST character of the signature: it carries 6 full bits.
+    (Changing the last base64 character can be a no-op, because it only carries a few
+    meaningful bits and some decoders ignore the rest, which would cause false positives.)
+    """
+    parts = token.split(".")
+    target = parts[2] if len(parts) == 3 and parts[2] else token
+    flipped = ("B" if target[0] != "B" else "C") + target[1:]
+    return ".".join([*parts[:2], flipped]) if target is not token else flipped
+
+
 class BrokenAuthCheck(Check):
     id = "broken-auth"
     owasp = "API2:2023"
@@ -55,7 +68,10 @@ class BrokenAuthCheck(Check):
             ("an invalid token", Identity("bogus", "not-a-real-token")),
         ]
         if ctx.user_a and ctx.user_a.token:
-            last = ctx.user_a.token[-1]
-            tampered = ctx.user_a.token[:-1] + ("A" if last != "A" else "B")
-            variants.append(("a tampered token", Identity("tampered", tampered, ctx.user_a.scheme)))
+            variants.append(
+                (
+                    "a tampered token",
+                    Identity("tampered", tamper_token(ctx.user_a.token), ctx.user_a.scheme),
+                )
+            )
         return variants
