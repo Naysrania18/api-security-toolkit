@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from ..client import ApiClient, Identity
 from ..models import Endpoint, Finding
+from ..paths import PATH_PARAM_RE, fill_path  # noqa: F401  (re-exported)
 
 
 @dataclass
@@ -32,11 +32,3 @@ class Check(ABC):
 
     @abstractmethod
     def run(self, ctx: ScanContext) -> list[Finding]: ...
-
-
-PATH_PARAM_RE = re.compile(r"\{([^}]+)\}")
-
-
-def fill_path(template: str, values: dict[str, str]) -> str:
-    """Substitute {param} placeholders; unknown params get a harmless placeholder value."""
-    return PATH_PARAM_RE.sub(lambda m: str(values.get(m.group(1), "1")), template)

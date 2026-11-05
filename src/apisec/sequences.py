@@ -6,9 +6,14 @@ GET /books/v1. We call the producer to learn *real* identifiers instead of guess
 
 from __future__ import annotations
 
-from .checks.base import PATH_PARAM_RE, ScanContext
-from .client import Identity
-from .models import Endpoint
+from typing import TYPE_CHECKING
+
+from .paths import PATH_PARAM_RE
+
+if TYPE_CHECKING:
+    from .checks.base import ScanContext
+    from .client import Identity
+    from .models import Endpoint
 
 
 def collection_path(endpoint: Endpoint) -> str | None:
