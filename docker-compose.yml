@@ -1,0 +1,13 @@
+# OPTIONAL: for people who have Docker. Not required (see README for the Python-only path).
+# Builds the deliberately vulnerable VAmPI API from its upstream repo and publishes it on
+# localhost only. Never expose this container to a network. NOTE: not tested by the author.
+services:
+  vampi:
+    build: https://github.com/erev0s/VAmPI.git
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      - vulnerable=1
+      - tokentimetolive=3600
+# OWASP crAPI is also a good target; follow its own docker-compose instructions:
+# https://github.com/OWASP/crAPI

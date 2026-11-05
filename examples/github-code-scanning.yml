@@ -1,0 +1,29 @@
+# Example: run apisec against a test deployment you own and upload SARIF to GitHub code scanning.
+# Copy to .github/workflows/ in the repository that owns the API. Adjust spec path and start-up.
+name: api-security-scan
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install git+https://github.com/Naysrania18/api-security-toolkit.git
+      # TODO: start your API on 127.0.0.1:5000 and create two test users, export their tokens
+      - run: |
+          apisec scan --spec openapi.yml --base-url http://127.0.0.1:5000 \
+            --format sarif --out-dir reports --i-am-authorized || true
+        env:
+          APISEC_TOKEN_A: ${{ secrets.APISEC_TOKEN_A }}
+          APISEC_TOKEN_B: ${{ secrets.APISEC_TOKEN_B }}
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/report.sarif
